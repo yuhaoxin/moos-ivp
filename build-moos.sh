@@ -13,6 +13,12 @@ J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 
 BUILD_BOT_CODE_ONLY="OFF"
 FORCE_FULL_RASPI_BUILD=""
+OS_NAME="$(uname -s)"
+HOST_ARCH="$(uname -m)"
+CMAKE_OSX_ARCHITECTURES_FLAG=""
+if [ "${OS_NAME}" = "Darwin" -a "${HOST_ARCH}" = "arm64" ]; then
+    CMAKE_OSX_ARCHITECTURES_FLAG="-DCMAKE_OSX_ARCHITECTURES=arm64"
+fi
 
 #-------------------------------------------------------------------
 #  Check for and handle command-line arguments
@@ -102,6 +108,7 @@ cmake -DENABLE_EXPORT=ON                                       \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
+      ${CMAKE_OSX_ARCHITECTURES_FLAG}                          \
       "${MOOS_SRC_DIR}/MOOSCore"                               \
   && echo "" && echo "Invoking make..." `pwd` && echo ""       \
   && make  ${CMD_ARGS}
@@ -124,6 +131,7 @@ echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                          \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin"  \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                     \
+      ${CMAKE_OSX_ARCHITECTURES_FLAG}                           \
       "${MOOS_SRC_DIR}/MOOSEssentials"                          \
   && echo"" && echo "Invoking make..." `pwd` && echo""          \
   && make ${CMD_ARGS}
@@ -159,6 +167,7 @@ if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
 	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
 	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
 	-DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
+	${CMAKE_OSX_ARCHITECTURES_FLAG}                          \
         "${MOOS_SRC_DIR}/MOOSToolsUI"                            \
       && echo "" && echo "Invoking make..." `pwd` && echo ""     \
       && make ${CMD_ARGS}    
@@ -190,6 +199,7 @@ if [ ! -e lib/libproj.a ]; then
 	  -DBUILD_GIE=OFF                        \
 	  -DBUILD_NAD2BIN=OFF                    \
 	  -DBUILD_PROJ=OFF                       \
+	  ${CMAKE_OSX_ARCHITECTURES_FLAG}        \
 	  "${MOOS_SRC_DIR}/proj-5.2.0"           \
 	&& make -j$(getconf _NPROCESSORS_ONLN)           \
 	&& make install                                  \
@@ -219,6 +229,7 @@ echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                 \
       -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}             \
       -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}                     \
+      ${CMAKE_OSX_ARCHITECTURES_FLAG}                      \
       "${MOOS_SRC_DIR}/MOOSGeodesy"                         \
   && echo "" && echo "Invoking make..." `pwd` && echo ""    \
   && make ${CMD_ARGS}

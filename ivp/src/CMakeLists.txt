@@ -118,6 +118,30 @@ IF (${APPLE})
   
 ENDIF()
 
+#----------------------------------------------------------------------
+# Part 5b: Derive common macOS framework link flags. AGL was removed in
+# macOS 15+, so only add it if the framework actually exists.
+#----------------------------------------------------------------------
+IF(${APPLE})
+  SET(IVP_APPLE_LINK_FLAGS "-framework OpenGL -framework Cocoa")
+  SET(IVP_HAS_AGL OFF)
+  IF(DEFINED CMAKE_OSX_SYSROOT AND NOT "${CMAKE_OSX_SYSROOT}" STREQUAL "")
+    IF(EXISTS "${CMAKE_OSX_SYSROOT}/System/Library/Frameworks/AGL.framework")
+      SET(IVP_HAS_AGL ON)
+    ENDIF()
+  ELSE()
+    IF(EXISTS "/System/Library/Frameworks/AGL.framework")
+      SET(IVP_HAS_AGL ON)
+    ENDIF()
+  ENDIF()
+  IF(IVP_HAS_AGL)
+    MESSAGE(STATUS "Detected AGL.framework inside active SDK - enabling legacy AGL link flag")
+    SET(IVP_APPLE_LINK_FLAGS "${IVP_APPLE_LINK_FLAGS} -framework AGL")
+  ELSE()
+    MESSAGE(STATUS "AGL.framework not available in active SDK - skipping legacy AGL link flag")
+  ENDIF()
+ENDIF()
+
 
 #=====================================================================
 # Part 6: Ensure IVP_, LIB_, and BIN_DIRECTORY set properly

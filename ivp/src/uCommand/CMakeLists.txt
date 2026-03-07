@@ -44,6 +44,6 @@ TARGET_LINK_LIBRARIES(uCommand
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
   SET_TARGET_PROPERTIES(uCommand PROPERTIES	  
-    LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
+    LINK_FLAGS "${IVP_APPLE_LINK_FLAGS}"
     )
 ENDIF (${APPLE})

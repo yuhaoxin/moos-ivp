@@ -11,6 +11,13 @@ BUILD_OPTIM="yes"
 CLEAN="no"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_WITH_UTM="-DUSE_UTM=ON"
+CMAKE_OSX_ARCHITECTURES_FLAG=""
+
+OS_NAME="$(uname -s)"
+HOST_ARCH="$(uname -m)"
+if [ "${OS_NAME}" = "Darwin" -a "${HOST_ARCH}" = "arm64" ]; then
+    CMAKE_OSX_ARCHITECTURES_FLAG="-DCMAKE_OSX_ARCHITECTURES=arm64"
+fi
 
 # By default, all code is built
 BUILD_BOT_CODE_ONLY="OFF"
@@ -169,6 +176,7 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
       -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"                 \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"               \
+      ${CMAKE_OSX_ARCHITECTURES_FLAG}                      \
       ${BUILD_WITH_UTM}                                    \
       ${IVP_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
