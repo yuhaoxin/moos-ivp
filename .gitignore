@@ -1,0 +1,10 @@
+/build/
+*.DS_Store
+/.serena/
+/.sisyphus/
+/.spec-workflow/
+/.vscode/
+/__pycache__/
+/bin
+/include
+/lib
